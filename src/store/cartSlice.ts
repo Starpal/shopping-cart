@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Item1 from "../images/item1.jpg";
 import Item2 from "../images/item2.jpg";
 import Item3 from "../images/item3.jpg";
@@ -6,7 +6,9 @@ import Item4 from "../images/item4.jpg";
 import Item5 from "../images/item5.jpg";
 import Item6 from "../images/item6.jpg";
 
-const initialState = {
+import type { CartState } from "../types";
+
+const initialState: CartState = {
   items: [
     {
       id: 1,
@@ -38,7 +40,7 @@ const initialState = {
     },
     {
       id: 5,
-      title: "Cropped-sho",
+      title: "Cropped-shoe",
       desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima, ex.",
       price: 160,
       img: Item5,
@@ -59,14 +61,14 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    addToCart: (state, action) => {
-      let addedItem = state.items.find((item) => item.id === action.payload);
+    addToCart: (state: CartState, action: PayloadAction<number>) => {
+      let addedItem = state.items.find((item) => item.id === action.payload)!;
       let existed_item = state.addedItems.find(
         (item) => action.payload === item.id,
       );
 
       if (existed_item) {
-        addedItem.quantity += 1;
+        addedItem.quantity = (addedItem.quantity || 0) + 1;
         state.total = state.total + addedItem.price;
       } else {
         addedItem.quantity = 1;
@@ -75,36 +77,36 @@ const cartSlice = createSlice({
         state.total = newTotal;
       }
     },
-    removeItem: (state, action) => {
+    removeItem: (state: CartState, action: PayloadAction<number>) => {
       let itemToRemove = state.addedItems.find(
         (item) => action.payload === item.id,
-      );
+      )!;
       state.addedItems = state.addedItems.filter(
         (item) => action.payload !== item.id,
       );
-      state.total = state.total - itemToRemove.price * itemToRemove.quantity;
+      state.total = state.total - itemToRemove.price * itemToRemove.quantity!;
     },
-    addQuantity: (state, action) => {
-      let addedItem = state.items.find((item) => item.id === action.payload);
-      addedItem.quantity += 1;
+    addQuantity: (state: CartState, action: PayloadAction<number>) => {
+      let addedItem = state.items.find((item) => item.id === action.payload)!;
+      addedItem.quantity = (addedItem.quantity || 0) + 1;
       state.total = state.total + addedItem.price;
     },
-    subtractQuantity: (state, action) => {
-      let addedItem = state.items.find((item) => item.id === action.payload);
+    subtractQuantity: (state: CartState, action: PayloadAction<number>) => {
+      let addedItem = state.items.find((item) => item.id === action.payload)!;
       if (addedItem.quantity === 1) {
         state.addedItems = state.addedItems.filter(
           (item) => item.id !== action.payload,
         );
         state.total = state.total - addedItem.price;
       } else {
-        addedItem.quantity -= 1;
+        addedItem.quantity = (addedItem.quantity || 0) - 1;
         state.total = state.total - addedItem.price;
       }
     },
-    addShipping: (state) => {
+    addShipping: (state: CartState) => {
       state.total = state.total + 6;
     },
-    subShipping: (state) => {
+    subShipping: (state: CartState) => {
       state.total = state.total - 6;
     },
   },

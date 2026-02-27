@@ -1,12 +1,5 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import App from "./App";
-import store from "./store/store";
-import { Provider } from "react-redux";
+// This file exists to satisfy react-scripts' default entry point lookup
+// when the project has been migrated to TypeScript.  It simply re-exports
+// the TypeScript version so the dev/build process can continue working.
 
-ReactDOM.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById("root"),
-);
+import "./index.tsx";

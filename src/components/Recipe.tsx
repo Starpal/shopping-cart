@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addShipping, subShipping } from '../store/cartSlice';
+import { RootState } from '../store/store';
 
-const Recipe = () => {
+const Recipe: React.FC = () => {
     const [isShippingChecked, setIsShippingChecked] = useState(false);
-    const total = useSelector(state => state.cart.total);
+    const total = useSelector((state: RootState) => state.cart.total);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -15,7 +16,7 @@ const Recipe = () => {
         }
     }, [isShippingChecked, dispatch]);
 
-    const handleChecked = (e) => {
+    const handleChecked = (e: ChangeEvent<HTMLInputElement>) => {
         setIsShippingChecked(e.target.checked);
         if (e.target.checked) {
             dispatch(addShipping());

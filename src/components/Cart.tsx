@@ -3,25 +3,27 @@ import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { removeItem, addQuantity, subtractQuantity } from "../store/cartSlice";
 import Recipe from "./Recipe";
+import { RootState } from "../store/store";
+import { Item } from "../types";
 
-const Cart = () => {
-  const items = useSelector((state) => state.cart.addedItems);
+const Cart: React.FC = () => {
+  const items = useSelector((state: RootState) => state.cart.addedItems);
   const dispatch = useDispatch();
 
-  const handleRemove = (id) => {
+  const handleRemove = (id: number) => {
     dispatch(removeItem(id));
   };
 
-  const handleAddQuantity = (id) => {
+  const handleAddQuantity = (id: number) => {
     dispatch(addQuantity(id));
   };
 
-  const handleSubtractQuantity = (id) => {
+  const handleSubtractQuantity = (id: number) => {
     dispatch(subtractQuantity(id));
   };
 
   let addedItems = items.length ? (
-    items.map((item) => {
+    items.map((item: Item) => {
       return (
         <li className="collection-item avatar" key={item.id}>
           <div className="item-img">
@@ -71,7 +73,7 @@ const Cart = () => {
       );
     })
   ) : (
-    <p>Nothing.</p>
+    <p>The Cart is Empty.</p>
   );
 
   return (
