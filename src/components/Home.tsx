@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Plus, Filter } from "lucide-react";
+import { Plus } from "lucide-react";
 import { RootState, AppDispatch } from "../store/store";
 import { addToCart, fetchApiProducts } from "../store/cartSlice";
 

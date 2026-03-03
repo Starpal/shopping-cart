@@ -88,12 +88,6 @@ const cartSlice = createSlice({
         }
       }
     },
-    addShipping: (state) => {
-      state.total += 6;
-    },
-    subShipping: (state) => {
-      state.total -= 6;
-    },
     checkout: (state) => {
       state.addedItems = [];
       state.total = 0;
@@ -131,8 +125,6 @@ export const {
   removeItem,
   addQuantity,
   subtractQuantity,
-  addShipping,
-  subShipping,
   checkout,
 } = cartSlice.actions;
 
