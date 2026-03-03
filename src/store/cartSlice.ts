@@ -1,58 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import Item1 from "../images/item1.jpg";
-import Item2 from "../images/item2.jpg";
-import Item3 from "../images/item3.jpg";
-import Item4 from "../images/item4.jpg";
-import Item5 from "../images/item5.jpg";
-import Item6 from "../images/item6.jpg";
+import { PRODUCTS } from "../data";
 
 import type { CartState } from "../types";
 
 const initialState: CartState = {
-  items: [
-    {
-      id: 1,
-      title: "Winter body",
-      desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima, ex.",
-      price: 110,
-      img: Item1,
-    },
-    {
-      id: 2,
-      title: "Adidas",
-      desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima, ex.",
-      price: 80,
-      img: Item2,
-    },
-    {
-      id: 3,
-      title: "Vans",
-      desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima, ex.",
-      price: 120,
-      img: Item3,
-    },
-    {
-      id: 4,
-      title: "White",
-      desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima, ex.",
-      price: 260,
-      img: Item4,
-    },
-    {
-      id: 5,
-      title: "Cropped-shoe",
-      desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima, ex.",
-      price: 160,
-      img: Item5,
-    },
-    {
-      id: 6,
-      title: "Blues",
-      desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima, ex.",
-      price: 90,
-      img: Item6,
-    },
-  ],
+  items: PRODUCTS,
   addedItems: [],
   total: 0,
 };
@@ -61,53 +13,76 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    addToCart: (state: CartState, action: PayloadAction<number>) => {
-      let addedItem = state.items.find((item) => item.id === action.payload)!;
-      let existed_item = state.addedItems.find(
-        (item) => action.payload === item.id,
-      );
+    /**
+     * Adds an item to the cart or increments its quantity
+     */
+    addToCart: (state, action: PayloadAction<number>) => {
+      const product = state.items.find((item) => item.id === action.payload);
+      const existingInCart = state.addedItems.find((item) => item.id === action.payload);
 
-      if (existed_item) {
-        addedItem.quantity = (addedItem.quantity || 0) + 1;
-        state.total = state.total + addedItem.price;
-      } else {
-        addedItem.quantity = 1;
-        let newTotal = state.total + addedItem.price;
-        state.addedItems.push(addedItem);
-        state.total = newTotal;
+      if (product) {
+        if (existingInCart) {
+          // IMPORTANT: Update the object inside addedItems
+          existingInCart.quantity = (existingInCart.quantity || 0) + 1;
+        } else {
+          // Push a copy of the product with quantity 1
+          state.addedItems.push({ ...product, quantity: 1 });
+        }
+        state.total += product.price;
       }
     },
-    removeItem: (state: CartState, action: PayloadAction<number>) => {
-      let itemToRemove = state.addedItems.find(
-        (item) => action.payload === item.id,
-      )!;
-      state.addedItems = state.addedItems.filter(
-        (item) => action.payload !== item.id,
-      );
-      state.total = state.total - itemToRemove.price * itemToRemove.quantity!;
-    },
-    addQuantity: (state: CartState, action: PayloadAction<number>) => {
-      let addedItem = state.items.find((item) => item.id === action.payload)!;
-      addedItem.quantity = (addedItem.quantity || 0) + 1;
-      state.total = state.total + addedItem.price;
-    },
-    subtractQuantity: (state: CartState, action: PayloadAction<number>) => {
-      let addedItem = state.items.find((item) => item.id === action.payload)!;
-      if (addedItem.quantity === 1) {
-        state.addedItems = state.addedItems.filter(
-          (item) => item.id !== action.payload,
-        );
-        state.total = state.total - addedItem.price;
-      } else {
-        addedItem.quantity = (addedItem.quantity || 0) - 1;
-        state.total = state.total - addedItem.price;
+
+    /**
+     * Removes an item completely from the cart
+     */
+    removeItem: (state, action: PayloadAction<number>) => {
+      const itemToRemove = state.addedItems.find((item) => item.id === action.payload);
+      
+      if (itemToRemove) {
+        state.total -= itemToRemove.price * (itemToRemove.quantity || 1);
+        state.addedItems = state.addedItems.filter((item) => item.id !== action.payload);
       }
     },
-    addShipping: (state: CartState) => {
-      state.total = state.total + 6;
+
+    /**
+     * Increments quantity of an item already in the cart
+     */
+    addQuantity: (state, action: PayloadAction<number>) => {
+      const itemInCart = state.addedItems.find((item) => item.id === action.payload);
+      
+      if (itemInCart) {
+        itemInCart.quantity = (itemInCart.quantity || 0) + 1;
+        state.total += itemInCart.price;
+      }
     },
-    subShipping: (state: CartState) => {
-      state.total = state.total - 6;
+
+    /**
+     * Decrements quantity or removes the item if quantity hits 0
+     */
+    subtractQuantity: (state, action: PayloadAction<number>) => {
+      const itemInCart = state.addedItems.find((item) => item.id === action.payload);
+
+      if (itemInCart && itemInCart.quantity) {
+        if (itemInCart.quantity > 1) {
+          itemInCart.quantity -= 1;
+          state.total -= itemInCart.price;
+        } else {
+          // If quantity is 1, remove the item entirely
+          state.addedItems = state.addedItems.filter((item) => item.id !== action.payload);
+          state.total -= itemInCart.price;
+        }
+      }
+    },
+
+    /**
+     * Adjusts total for express shipping
+     */
+    addShipping: (state) => {
+      state.total += 6;
+    },
+
+    subShipping: (state) => {
+      state.total -= 6;
     },
   },
 });
@@ -120,4 +95,5 @@ export const {
   addShipping,
   subShipping,
 } = cartSlice.actions;
+
 export default cartSlice.reducer;
