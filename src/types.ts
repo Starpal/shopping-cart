@@ -1,5 +1,3 @@
-// shared type definitions
-
 export interface Item {
   id: number;
   title: string;
@@ -7,6 +5,7 @@ export interface Item {
   price: number;
   img: string;
   quantity?: number;
+  category?: string;
 }
 
 export interface CartState {

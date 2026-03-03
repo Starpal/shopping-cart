@@ -14,14 +14,14 @@ const loadFromLocalStorage = () => {
     
     if (serializedItems === null) return undefined;
 
-    // We return a partial state that matches the RootState structure
     return {
       cart: {
-        // We spread the initial state to ensure 'items' (the product list) is always there
-        // as we only save 'addedItems' and 'total'
         addedItems: JSON.parse(serializedItems),
         total: JSON.parse(serializedTotal || "0"),
-        items: [] // This will be merged with the slice's initial state if handled correctly
+        items: [],
+        // Use "as const" or cast to the specific type to satisfy TS
+        status: 'idle' as "idle" | "loading" | "succeeded" | "failed", 
+        error: null
       }
     };
   } catch (e) {
