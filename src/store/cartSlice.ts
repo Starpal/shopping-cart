@@ -94,6 +94,10 @@ const cartSlice = createSlice({
     subShipping: (state) => {
       state.total -= 6;
     },
+    checkout: (state) => {
+      state.addedItems = [];
+      state.total = 0;
+    }
   },
   // 2. Handle API results in extraReducers
   extraReducers: (builder) => {
@@ -129,6 +133,7 @@ export const {
   subtractQuantity,
   addShipping,
   subShipping,
+  checkout,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;
