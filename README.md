@@ -20,3 +20,13 @@ A high-performance, responsive e-commerce shopping cart built with **React**, **
 1. Clone the repository:
    ```bash
    git clone https://github.com/Starpal/shopping-cart.git
+
+2. Install Dependencies
+   ```bash
+   npm install
+
+3. Start the Application
+   ```bash
+   npm start
+
+Developed with ❤️ by Starpal
