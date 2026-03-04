@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import Cart from "./components/Cart";
@@ -9,8 +9,10 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <Navbar />
-        <Route path="/" exact component={Home} />
-        <Route path="/cart" component={Cart} />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/cart" element={<Cart />} />
+        </Routes>
       </div>
     </BrowserRouter>
   );

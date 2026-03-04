@@ -1,14 +1,22 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import App from "./App";
-import { store } from './store/store';
-import { Provider } from "react-redux";
 import "./index.css";
 
-// ReactDOM typings mismatch with React 16, cast to any
-(ReactDOM as any).render(
-  <Provider store={store}>
+// Troviamo l'elemento nel DOM
+const container = document.getElementById("root");
+
+// Verifichiamo che l'elemento esista (buona pratica per TypeScript)
+if (!container) {
+  throw new Error("Failed to find the root element");
+}
+
+// Creiamo la root di React
+const root = createRoot(container);
+
+
+root.render(
+  <React.StrictMode>
     <App />
-  </Provider>,
-  document.getElementById("root"),
+  </React.StrictMode>
 );

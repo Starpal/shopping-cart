@@ -1,14 +1,14 @@
 # LevelShop - Modern E-Commerce UI
 
-A high-performance, responsive e-commerce shopping app built with **React**, **Typescript**, **Redux Toolkit**, and **Tailwind CSS**.
+A high-performance, responsive e-commerce shopping app built with **React**, **Typescript**, **Zustand**, and **Tailwind CSS**.
 
 ## 🚀 Technical Stack
-- **Frontend**: React 18 with TypeScript.
-- **State Management**: Redux Toolkit.
+- **Frontend**: React 19 with TypeScript.
+- **State Management**: Zustand.
 - **Styling**: Tailwind CSS.
 - **Icons**: Lucide React.
 - **Animations**: Framer Motion.
-- **Persistence**: LocalStorage integration for cart data.
+- **Persistence**: Zustand Persist Middleware (Automatic synchronization with LocalStorage).
 
 ## 🛠️ Key Features
 - **Dynamic Cart**: Real-time quantity updates and total price calculation.

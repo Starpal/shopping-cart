@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // useNavigate sostituisce useHistory in v6/v7
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Minus,
@@ -14,42 +13,40 @@ import {
   ShieldCheck,
   Loader2,
 } from "lucide-react";
-import { RootState } from "../store/store";
+
+// Importiamo lo store e il tipo Item
+import { useCartStore } from "../store/useCartStore";
 import { Item } from "../types";
-import {
-  removeItem,
-  addQuantity,
-  subtractQuantity,
-  checkout,
-} from "../store/cartSlice";
 
 const Cart: React.FC = () => {
-  const addedItems = useSelector((state: RootState) => state.cart.addedItems);
-  const dispatch = useDispatch();
-  const history = useHistory();
+  // Zustand: Estraiamo stato e azioni
+  const { 
+    addedItems, 
+    total, 
+    addQuantity, 
+    subtractQuantity, 
+    removeItem, 
+    checkout 
+  } = useCartStore();
 
-  // Component States
+  const navigate = useNavigate(); // Hook di navigazione moderno
+
+  // Local States
   const [isShippingChecked, setIsShippingChecked] = useState(false);
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<
-    "card" | "paypal" | "googlepay"
-  >("card");
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "paypal" | "googlepay">("card");
   const [isOrdered, setIsOrdered] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Dynamic Calculations (Bug-Proof)
-  const subtotal = addedItems.reduce(
-    (acc, item) => acc + item.price * (item.quantity || 1),
-    0,
-  );
+  // Calcoli dinamici (Il totale base arriva già dallo store)
   const shippingCost = isShippingChecked ? 6 : 0;
-  const finalTotal = subtotal + shippingCost;
+  const finalTotal = total + shippingCost;
 
   const handleFinalOrder = () => {
     setIsProcessing(true);
-    // Simulate API delay
+    // Simulazione del checkout
     setTimeout(() => {
-      dispatch(checkout());
+      checkout(); // Resetta il carrello nello store
       setIsOrdered(true);
       setIsProcessing(false);
     }, 2000);
@@ -75,7 +72,7 @@ const Cart: React.FC = () => {
             your tracking number.
           </p>
           <button
-            onClick={() => history.push("/")}
+            onClick={() => navigate("/")} // Navigazione v7
             className="w-full bg-slate-900 text-white py-5 rounded-2xl font-bold hover:bg-black transition-all shadow-xl active:scale-95"
           >
             Return to Store
@@ -129,7 +126,7 @@ const Cart: React.FC = () => {
                       </h3>
                       <div className="flex items-center gap-4 mt-4">
                         <button
-                          onClick={() => dispatch(subtractQuantity(item.id))}
+                          onClick={() => subtractQuantity(item.id)}
                           className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center hover:bg-slate-200 transition-colors text-slate-600"
                         >
                           <Minus className="w-4 h-4" />
@@ -138,7 +135,7 @@ const Cart: React.FC = () => {
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => dispatch(addQuantity(item.id))}
+                          onClick={() => addQuantity(item.id)}
                           className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center hover:bg-slate-200 transition-colors text-slate-600"
                         >
                           <Plus className="w-4 h-4" />
@@ -150,7 +147,7 @@ const Cart: React.FC = () => {
                         ${(item.price * (item.quantity || 1)).toFixed(2)}
                       </p>
                       <button
-                        onClick={() => dispatch(removeItem(item.id))}
+                        onClick={() => removeItem(item.id)}
                         className="text-xs font-bold text-rose-400 hover:text-rose-600 flex items-center gap-1 ml-auto transition-colors"
                       >
                         <Trash2 className="w-3.5 h-3.5" /> Remove
@@ -190,15 +187,13 @@ const Cart: React.FC = () => {
                 <div className="flex justify-between text-sm text-slate-500 font-semibold">
                   <span>Subtotal</span>
                   <span className="text-slate-900 font-bold">
-                    ${subtotal.toFixed(2)}
+                    ${total.toFixed(2)}
                   </span>
                 </div>
 
                 <div className="space-y-4">
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-slate-500 font-semibold">
-                      Shipping
-                    </span>
+                    <span className="text-slate-500 font-semibold">Shipping</span>
                     <motion.span
                       key={isShippingChecked ? "plus" : "free"}
                       initial={{ opacity: 0, y: -5 }}
@@ -215,9 +210,7 @@ const Cart: React.FC = () => {
                         type="checkbox"
                         className="peer h-5 w-5 appearance-none rounded-md border-2 border-slate-300 bg-white checked:bg-indigo-600 checked:border-indigo-600 transition-all cursor-pointer"
                         checked={isShippingChecked}
-                        onChange={() =>
-                          setIsShippingChecked(!isShippingChecked)
-                        }
+                        onChange={() => setIsShippingChecked(!isShippingChecked)}
                       />
                       <Check
                         className="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 left-0.5 pointer-events-none"
@@ -244,9 +237,9 @@ const Cart: React.FC = () => {
                 </div>
               </div>
 
-              {/* ANIMATED PAYMENT FLOW */}
+              {/* PAYMENT FLOW */}
               <div className="relative overflow-hidden">
-                <AnimatePresence exitBeforeEnter>
+                <AnimatePresence mode="wait"> {/* In v6/v7 exitBeforeEnter è diventato mode="wait" */}
                   {!showPaymentOptions ? (
                     <motion.div
                       key="summary-btn"
@@ -267,80 +260,34 @@ const Cart: React.FC = () => {
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      transition={{
-                        type: "spring",
-                        damping: 25,
-                        stiffness: 200,
-                      }}
                       className="space-y-6"
                     >
                       <div className="flex items-center justify-center gap-3">
                         <div className="h-px flex-1 bg-slate-100" />
-                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                          Select Payment
-                        </h4>
+                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Select Payment</h4>
                         <div className="h-px flex-1 bg-slate-100" />
                       </div>
 
                       <div className="grid grid-cols-3 gap-2">
-                        {(["card", "paypal", "googlepay"] as const).map(
-                          (method) => (
-                            <button
-                              key={method}
-                              onClick={() => setPaymentMethod(method)}
-                              className={`p-3 rounded-xl border-2 flex flex-col items-center gap-2 transition-all duration-300 ${
-                                paymentMethod === method
-                                  ? "border-indigo-600 bg-indigo-50 text-indigo-600"
-                                  : "border-slate-50 bg-slate-50 text-slate-400 hover:border-slate-200"
-                              }`}
-                            >
-                              {method === "card" && (
-                                <CreditCard className="w-5 h-5" />
-                              )}
-                              {method === "paypal" && (
-                                <Wallet className="w-5 h-5" />
-                              )}
-                              {method === "googlepay" && (
-                                <span className="text-sm font-black italic h-5 flex items-center">
-                                  GPay
-                                </span>
-                              )}
-                              <span className="text-[9px] font-black uppercase tracking-tighter">
-                                {method.replace("pay", "")}
-                              </span>
-                            </button>
-                          ),
-                        )}
-                      </div>
-
-                      <AnimatePresence>
-                        {paymentMethod === "card" && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="space-y-3 overflow-hidden"
+                        {(["card", "paypal", "googlepay"] as const).map((method) => (
+                          <button
+                            key={method}
+                            onClick={() => setPaymentMethod(method)}
+                            className={`p-3 rounded-xl border-2 flex flex-col items-center gap-2 transition-all duration-300 ${
+                              paymentMethod === method
+                                ? "border-indigo-600 bg-indigo-50 text-indigo-600"
+                                : "border-slate-50 bg-slate-50 text-slate-400 hover:border-slate-200"
+                            }`}
                           >
-                            <input
-                              type="text"
-                              placeholder="Card Number"
-                              className="w-full p-4 bg-slate-50 border-none rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-100 transition-all"
-                            />
-                            <div className="grid grid-cols-2 gap-3">
-                              <input
-                                type="text"
-                                placeholder="MM/YY"
-                                className="w-full p-4 bg-slate-50 border-none rounded-xl text-xs font-bold outline-none"
-                              />
-                              <input
-                                type="text"
-                                placeholder="CVC"
-                                className="w-full p-4 bg-slate-50 border-none rounded-xl text-xs font-bold outline-none"
-                              />
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                            {method === "card" && <CreditCard className="w-5 h-5" />}
+                            {method === "paypal" && <Wallet className="w-5 h-5" />}
+                            {method === "googlepay" && <span className="text-sm font-black italic h-5 flex items-center">GPay</span>}
+                            <span className="text-[9px] font-black uppercase tracking-tighter">
+                              {method.replace("pay", "")}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
 
                       <div className="pt-2">
                         <button
@@ -357,18 +304,10 @@ const Cart: React.FC = () => {
                               <Loader2 className="w-6 h-6 animate-spin" />
                               <span>Validating...</span>
                             </>
-                          ) : paymentMethod === "card" ? (
-                            "Pay Securely"
                           ) : (
-                            `Pay with ${paymentMethod.replace("pay", " Pay")}`
+                            "Pay Securely"
                           )}
                         </button>
-                        {/* <button
-                          onClick={() => setShowPaymentOptions(false)}
-                          className="w-full mt-4 text-[10px] font-black text-slate-400 hover:text-slate-600 uppercase tracking-widest transition-colors py-2"
-                        >
-                          Cancel and Go Back
-                        </button> */}
                       </div>
                     </motion.div>
                   )}

@@ -1,26 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { Plus } from "lucide-react";
-import { RootState, AppDispatch } from "../store/store";
-import { addToCart, fetchApiProducts } from "../store/cartSlice";
+// Importiamo l'hook dello store
+import { useCartStore } from "../store/useCartStore";
 
 const Home: React.FC = () => {
-  const { items, status } = useSelector((state: RootState) => state.cart);
-  const dispatch = useDispatch<AppDispatch>();
+  // Selettori Zustand: prendiamo solo i dati e le azioni necessarie
+  const { items, status, fetchApiProducts, addToCart } = useCartStore();
+  
   const [filter, setFilter] = useState<string>("all");
 
   useEffect(() => {
-    // Only fetch if we haven't loaded them yet
+    // Chiamiamo l'azione asincrona se lo stato è idle
     if (status === "idle") {
-      dispatch(fetchApiProducts());
+      fetchApiProducts();
     }
-  }, [status, dispatch]);
+  }, [status, fetchApiProducts]);
 
-  const handleAddToCart = (id: number) => {
-    dispatch(addToCart(id));
-  };
-
-  // Filter logic for clothing and Accessories
+  // Logica di filtraggio (rimane invariata, ma più pulita senza selector Redux)
   const filteredItems = items.filter((item) => {
     if (filter === "all") return true;
     if (filter === "clothing") return item.category?.includes("clothing");
@@ -79,7 +75,7 @@ const Home: React.FC = () => {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <button
-                  onClick={() => handleAddToCart(item.id)}
+                  onClick={() => addToCart(item.id)} // Azione diretta senza dispatch
                   className="absolute bottom-6 right-6 bg-white text-slate-900 p-4 rounded-2xl shadow-xl opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all hover:bg-indigo-600 hover:text-white"
                 >
                   <Plus className="w-6 h-6" strokeWidth={2.5} />
