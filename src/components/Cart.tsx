@@ -20,13 +20,13 @@ import { Item } from "../types";
 
 const Cart: React.FC = () => {
   // Zustand: Estraiamo stato e azioni
-  const { 
-    addedItems, 
-    total, 
-    addQuantity, 
-    subtractQuantity, 
-    removeItem, 
-    checkout 
+  const {
+    addedItems,
+    total,
+    addQuantity,
+    subtractQuantity,
+    removeItem,
+    checkout,
   } = useCartStore();
 
   const navigate = useNavigate(); // Hook di navigazione moderno
@@ -34,7 +34,9 @@ const Cart: React.FC = () => {
   // Local States
   const [isShippingChecked, setIsShippingChecked] = useState(false);
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<"card" | "paypal" | "googlepay">("card");
+  const [paymentMethod, setPaymentMethod] = useState<
+    "card" | "paypal" | "googlepay"
+  >("card");
   const [isOrdered, setIsOrdered] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -193,7 +195,9 @@ const Cart: React.FC = () => {
 
                 <div className="space-y-4">
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-slate-500 font-semibold">Shipping</span>
+                    <span className="text-slate-500 font-semibold">
+                      Shipping
+                    </span>
                     <motion.span
                       key={isShippingChecked ? "plus" : "free"}
                       initial={{ opacity: 0, y: -5 }}
@@ -210,7 +214,9 @@ const Cart: React.FC = () => {
                         type="checkbox"
                         className="peer h-5 w-5 appearance-none rounded-md border-2 border-slate-300 bg-white checked:bg-indigo-600 checked:border-indigo-600 transition-all cursor-pointer"
                         checked={isShippingChecked}
-                        onChange={() => setIsShippingChecked(!isShippingChecked)}
+                        onChange={() =>
+                          setIsShippingChecked(!isShippingChecked)
+                        }
                       />
                       <Check
                         className="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 left-0.5 pointer-events-none"
@@ -239,7 +245,8 @@ const Cart: React.FC = () => {
 
               {/* PAYMENT FLOW */}
               <div className="relative overflow-hidden">
-                <AnimatePresence mode="wait"> {/* In v6/v7 exitBeforeEnter è diventato mode="wait" */}
+                <AnimatePresence mode="wait">
+                  {" "}
                   {!showPaymentOptions ? (
                     <motion.div
                       key="summary-btn"
@@ -264,31 +271,95 @@ const Cart: React.FC = () => {
                     >
                       <div className="flex items-center justify-center gap-3">
                         <div className="h-px flex-1 bg-slate-100" />
-                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Select Payment</h4>
+                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                          Select Payment
+                        </h4>
                         <div className="h-px flex-1 bg-slate-100" />
                       </div>
 
                       <div className="grid grid-cols-3 gap-2">
-                        {(["card", "paypal", "googlepay"] as const).map((method) => (
-                          <button
-                            key={method}
-                            onClick={() => setPaymentMethod(method)}
-                            className={`p-3 rounded-xl border-2 flex flex-col items-center gap-2 transition-all duration-300 ${
-                              paymentMethod === method
-                                ? "border-indigo-600 bg-indigo-50 text-indigo-600"
-                                : "border-slate-50 bg-slate-50 text-slate-400 hover:border-slate-200"
-                            }`}
-                          >
-                            {method === "card" && <CreditCard className="w-5 h-5" />}
-                            {method === "paypal" && <Wallet className="w-5 h-5" />}
-                            {method === "googlepay" && <span className="text-sm font-black italic h-5 flex items-center">GPay</span>}
-                            <span className="text-[9px] font-black uppercase tracking-tighter">
-                              {method.replace("pay", "")}
-                            </span>
-                          </button>
-                        ))}
+                        {(["card", "paypal", "googlepay"] as const).map(
+                          (method) => (
+                            <button
+                              key={method}
+                              onClick={() => setPaymentMethod(method)}
+                              className={`p-3 rounded-xl border-2 flex flex-col items-center gap-2 transition-all duration-300 ${
+                                paymentMethod === method
+                                  ? "border-indigo-600 bg-indigo-50 text-indigo-600"
+                                  : "border-slate-50 bg-slate-50 text-slate-400 hover:border-slate-200"
+                              }`}
+                            >
+                              {method === "card" && (
+                                <CreditCard className="w-5 h-5" />
+                              )}
+                              {method === "paypal" && (
+                                <Wallet className="w-5 h-5" />
+                              )}
+                              {method === "googlepay" && (
+                                <span className="text-sm font-black italic h-5 flex items-center">
+                                  GPay
+                                </span>
+                              )}
+                              <span className="text-[9px] font-black uppercase tracking-tighter">
+                                {method.replace("pay", "")}
+                              </span>
+                            </button>
+                          )
+                        )}
                       </div>
+                      {/* CREDIT CARD FORM */}
+                      <AnimatePresence>
+                        {paymentMethod === "card" && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                            animate={{
+                              height: "auto",
+                              opacity: 1,
+                              marginTop: 24,
+                            }}
+                            exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="p-5 bg-slate-50 rounded-3xl space-y-4 border border-slate-100">
+                              {/* Numero Carta */}
+                              <div className="space-y-1">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                  Card Number
+                                </label>
+                                <input
+                                  type="text"
+                                  placeholder="0000 0000 0000 0000"
+                                  className="w-full bg-white rounded-xl p-4 text-sm font-medium outline-none focus:ring-2 focus:ring-black transition-all shadow-sm"
+                                />
+                              </div>
 
+                              {/* Scadenza e CVC */}
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                    Expiry
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="MM/YY"
+                                    className="w-full bg-white rounded-xl p-4 text-sm font-medium outline-none focus:ring-2 focus:ring-black transition-all shadow-sm"
+                                  />
+                                </div>
+                                <div className="space-y-1">
+                                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                    CVC
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="123"
+                                    className="w-full bg-white rounded-xl p-4 text-sm font-medium outline-none focus:ring-2 focus:ring-black transition-all shadow-sm"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                       <div className="pt-2">
                         <button
                           onClick={handleFinalOrder}
