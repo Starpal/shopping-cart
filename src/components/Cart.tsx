@@ -245,14 +245,16 @@ const Cart: React.FC = () => {
 
               {/* PAYMENT FLOW */}
               <div className="relative overflow-hidden">
-                <AnimatePresence mode="wait">
+                <AnimatePresence>
                   {" "}
                   {!showPaymentOptions ? (
                     <motion.div
                       key="summary-btn"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      exit={{ opacity: 0, y: -20, position: "absolute",width: "100%" }}
+                      layout={true}
                     >
                       <button
                         onClick={() => setShowPaymentOptions(true)}
@@ -264,9 +266,11 @@ const Cart: React.FC = () => {
                   ) : (
                     <motion.div
                       key="payment-options"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      layout={true}
                       className="space-y-6"
                     >
                       <div className="flex items-center justify-center gap-3">
