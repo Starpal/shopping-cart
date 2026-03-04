@@ -20,3 +20,9 @@ export interface CartState {
   subtractQuantity: (id: number) => void;
   checkout: () => void;
 }
+
+export type CardFormData = {
+  cardNumber: string;
+  expiry: string;
+  cvc: string;
+};
