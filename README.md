@@ -24,7 +24,7 @@ A high-performance, responsive e-commerce shopping app built with **React**, **T
 ## 📦 Installation & Setup
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/Starpal/shopping-cart.git](https://github.com/Starpal/shopping-cart.git)
+   git clone https://github.com/Starpal/shopping-cart.git
 
 2. Install Dependencies
    ```bash
