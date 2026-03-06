@@ -233,7 +233,7 @@ const Cart: React.FC = () => {
             </div>
 
             <div className="relative overflow-hidden">
-              <AnimatePresence mode="wait">
+              <AnimatePresence mode="popLayout">
                 {!showPaymentOptions ? (
                   <motion.div
                     key="btn"

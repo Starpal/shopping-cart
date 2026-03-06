@@ -12,8 +12,12 @@ export interface CartState {
   items: Item[];
   addedItems: Item[];
   total: number;
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
-  fetchApiProducts: () => Promise<void>;
+  status: "idle" | "loading" | "succeeded" | "failed";
+  skip: number;
+  limit: number;
+  hasMore: boolean;
+  fetchApiProducts: (filter?: string) => Promise<void>; 
+  setFilterAndFetch: (filter: string) => Promise<void>;
   addToCart: (id: number) => void;
   removeItem: (id: number) => void;
   addQuantity: (id: number) => void;
