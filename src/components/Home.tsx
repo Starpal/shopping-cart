@@ -25,7 +25,7 @@ const Home: React.FC = () => {
           fetchApiProducts(activeTab);
         }
       },
-      { threshold: 0.1 } // Si attiva appena un pezzetto della sentinella è visibile
+      { threshold: 0.5} // Si attiva appena un pezzetto della sentinella è visibile
     );
 
     if (observerTarget.current) {
